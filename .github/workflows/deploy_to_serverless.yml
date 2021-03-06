@@ -1,0 +1,23 @@
+name: 'deploy to serverless'
+
+on:
+  watch:
+    types: started
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: 执行部署脚本
+      env:
+          SERVERLESS_PLATFORM_VENDOR: tencent
+          USER_CONFIG: ${{ secrets.USER_CONFIG }}
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+      run: |
+          echo "$USER_COVER" > ./config.json
+          sudo chmod +x ./serverless/deploy.sh
+          bash ./serverless/deploy.sh
+         
