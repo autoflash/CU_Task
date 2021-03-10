@@ -69,7 +69,7 @@ def login(username,password,appId):
     #这里对手机号和密码加密，传入参数需是 byte 类型
     username = encryption(str.encode(username),key)
     password = encryption(str.encode(password),key)
-    #appId 联通后端会验证这个值，如不是常登录设备会触发验证码登录
+    #appId 联通后端会验证这个值,如不是常登录设备会触发验证码登录
     #appId = os.environ.get('APPID_COVER')
     #设置一个标志，用户是否登录成功
     flag = False
@@ -121,7 +121,7 @@ def login(username,password,appId):
         result = response.json()
         if result['code'] == '0':
             logger.info('【登录】: ' + result['default'][-4:])
-            session.headers.update({'User-Agent': 'Mozilla/5.0 (iPad; CPU OS 14_0_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 unicom{version:iphone_c@8.0100}{systemVersion:dis}{yw_code:}'})
+            session.headers.update({'User-Agent': 'Mozilla/5.0 (Linux; Android 10; RMX1901 Build/QKQ1.190918.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.186 Mobile Safari/537.36; unicom{version:android@8.0100,desmobile:' + str(username) + '};devicetype{deviceBrand:Realme,deviceModel:RMX1901};{yw_code:}'})
             flag = True
         else:
             logger.info('【登录】: ' + result['dsc'])

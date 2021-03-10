@@ -36,7 +36,7 @@ def readFile_html(filepath):
             content += line + '<br>'
     return content
 
-
+#邮件推送
 def sendEmail(email):
     try:
         #要发送邮件内容
@@ -68,7 +68,7 @@ def sendDing(webhook):
         data = {
             'msgtype': 'markdown',
             'markdown': {
-                'title': 'CU Task 每日报表',
+                'title': 'UnicomTask每日报表',
                 'text': content
             }
         }
@@ -91,7 +91,7 @@ def sendTg(tgBot):
         #发送内容
         content = readFile_text('./log.txt')
         data = {
-            'CU Task 每日报表':content
+            'UnicomTask每日报表':content
         }
         content = urllib.parse.urlencode(data)
         #TG_BOT的token
@@ -112,10 +112,10 @@ def sendPushplus(token):
         #发送内容
         data = {
             "token": token,
-            "title": "CU Task 每日报表",
+            "title": "UnicomTask每日报表",
             "content": readFile_html('./log.txt')
         }
-        url = 'http://pushplus.hxtrip.com/send/'
+        url = 'http://www.pushplus.plus/send'
         headers = {'Content-Type': 'application/json'}
         body = json.dumps(data).encode(encoding='utf-8')
         resp = requests.post(url, data=body, headers=headers)
