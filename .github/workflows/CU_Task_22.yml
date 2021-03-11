@@ -1,0 +1,36 @@
+name: CU_Task_2
+
+on:
+  push:
+    branches: main
+  gollum:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  CU_TASK:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/run_in_Actions/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    - name: Build and publish
+      env:
+        USER_CONFIG: ${{ secrets.USER_CONFIG_22 }}
+      run: |
+        echo "$USER_CONFIG" > ./config.json
+        python main.py
