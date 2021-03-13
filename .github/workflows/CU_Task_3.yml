@@ -30,7 +30,7 @@ jobs:
         pip install -r requirements.txt
     - name: Build and publish
       env:
-        USER_CONFIG: ${{ secrets.USER_CONFIG_2 }}
+        USER_CONFIG: ${{ secrets.USER_CONFIG_3 }}
       run: |
         echo "$USER_CONFIG" > ./config.json
         python main.py
