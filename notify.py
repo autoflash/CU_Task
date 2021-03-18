@@ -50,12 +50,14 @@ def sendEmail(email):
         res1 = requests.get('https://api.ssss.fun/push/get.php' + param1)
         res1.encoding = 'utf-8'
         res1 = res1.json()
-        if res1['resultCode'] == '1':
+        if res1['Code'] == '1':
             print(res1['msg'])
         else:
             #备用推送
             requests.get('https://api.ssss.fun/push/get.php' + param2)
             print('email push SSSS')
+            #这里不知道为什么，在很多情况下返回的不是 json，
+            # 但在测试过程中成功率极高,因此直接输出
     except Exception as e:
         print('邮件推送异常，原因为: ' + str(e))
         print(traceback.format_exc())
@@ -147,3 +149,29 @@ def sendWechat(wex):
     message.encoding = 'utf-8'
     res = message.json()
     print('Wechat send : ' + res['errmsg'])
+
+#发送IFTTT通知
+def sendIFTTT(ifttt):
+    try:
+        content = readFile('./log.txt')
+        body = { ifttt['subjectKey']: 'UnicomTask每日报表', ifttt['contentKey']: content }
+        url = 'https://maker.ifttt.com/trigger/{event_name}/with/key/{key}'.format(event_name=ifttt['eventName'], key=ifttt['apiKey'])
+        response = requests.post(url, json=body)
+        print(response)
+    except Exception as e:
+        print('IFTTT通知推送异常，原因为: ' + str(e))
+        print(traceback.format_exc())
+
+#发送Bark通知
+def sendBarkkey(Barkkey):
+    #发送内容
+    content = readFile_text('./log.txt')
+    data = {
+        'UnicomTask每日报表':content
+    }
+    content = urllib.parse.urlencode(data)
+    url = f'https://api.day.app/{Barkkey}/{content}'
+    session = requests.Session()
+    resp = session.post(url)
+    state=json.loads(resp.text)
+    print(state)
