@@ -51,14 +51,12 @@ def woTree_task():
 #位置: 我的 --> 我的金币
 def daySign_task(username):
     try:
-        #参考同类项目 HiCnUnicom 待明日验证是否能加倍成功
         client.headers.update({'referer': 'https://img.client.10010.com/activitys/member/index.html'})
         param = 'yw_code=&desmobile=' + username + '&version=android@$8.0100'
         client.get('https://act.10010.com/SigninApp/signin/querySigninActivity.htm?' + param)
         client.headers.update({'referer': 'https://act.10010.com/SigninApp/signin/querySigninActivity.htm?' + param})
         daySign = client.post('https://act.10010.com/SigninApp/signin/daySign')
         daySign.encoding='utf-8'
-        #本来是不想加这个的，但是会出现加倍失败的状况，暂时加上也是有可能出问题
         client.post('https://act.10010.com/SigninApp/signin/todaySign')
         client.post('https://act.10010.com/SigninApp/signin/addIntegralDA')
         client.post('https://act.10010.com/SigninApp/signin/getContinuous')
@@ -207,9 +205,6 @@ def collectFlow_task():
         'stepflag': '22'
     }
     
-    data2 = {
-        'stepflag': '23'
-    }
     try:
         for i in range(3):
             #看视频
@@ -438,10 +433,8 @@ def actionFlow(username):
     flag = True
     for end in endTime:
         #如果时间小于1天就激活
-        #程序早上7：30运行，正好当天可使用
         if end < 86400:
             flag = False
-            param = 'activeCode='+datas[i]['activeCode']+'&prizeRecordID='+datas[i]['prizeRecordID']+'&activeName='+'做任务领奖品'
             activeData = {
                 'activeCode': datas[i]['activeCode'],
                 'prizeRecordID': datas[i]['prizeRecordID'],
@@ -499,6 +492,22 @@ def check():
         logging.info('【娱乐中心任务】: 触发防刷，跳过')
         return False
 
+#每月领取1G流量包，仅限湖北用户
+#位置：暂时不清楚
+def monthOneG(username):
+    #获取当前是本月几号
+    now = getTimezone()
+    timeArray = time.localtime(now)
+    day = time.strftime("%d",timeArray)
+    ## 联通活动 不需要登录
+    url = f'https://wap.10010hb.net/zinfo/activity/mobilePrize/getAward?serialNumber={username}'
+    #每月3号领取
+    if day==3:
+        award = client.post(url,'{}')
+        award.encoding = 'utf-8'
+        res = award.json()
+        logging.info('【每月领取1G】: ' + res['alertMsg'])
+
 #腾讯云函数入口
 def main(event, context):
     users = readJson()
@@ -524,6 +533,7 @@ def main(event, context):
             collectFlow_task()
             woTree_task()
             actionFlow(user['username'])
+            monthOneG(user['username'])
         if ('email' in user) :
             notify.sendEmail(user['email'])
         if ('dingtalkWebhook' in user) :
@@ -536,8 +546,8 @@ def main(event, context):
             notify.sendWechat(user['enterpriseWechat'])
         if('IFTTT' in user):
             notify.sendIFTTT(user['IFTTT'])
-        if('Barkkey' in user):
-            notify.sendBarkkey(user['Barkkey'])
+        if('Bark' in user):
+            notify.sendBark(user['Bark'])
 
 #主函数入口
 if __name__ == '__main__':
